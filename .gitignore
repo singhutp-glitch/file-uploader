@@ -1,0 +1,18 @@
+# dependencies
+node_modules
+
+# environment variables
+.env
+
+# uploaded files
+uploads
+
+# prisma generated client
+/generated/prisma
+
+# logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
