@@ -37,8 +37,13 @@ const postSignUp = async (req,res)=>{
 
 };
 
+const getLogin = (req,res)=>{
+    res.render('login-form');
+};
+
 export default {
     getHome,
     getSignUp,
-    postSignUp
+    postSignUp,
+    getLogin
 }

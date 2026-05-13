@@ -9,4 +9,8 @@ router.get('/sign-up',appController.getSignUp)
 router.post('/sign-up',signUpValidator,appController.postSignUp)
 
 
+router.get('/login',appController.getLogin)
+router.post('/sign-up',signUpValidator,appController.postSignUp)
+
+
 export default router;
