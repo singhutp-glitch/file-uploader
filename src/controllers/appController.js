@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
 import prisma from '../../lib/prisma.js'
+import passport from "passport";
 
 const getHome = (req,res)=>{
     res.render('homePage');
@@ -41,9 +42,68 @@ const getLogin = (req,res)=>{
     res.render('login-form');
 };
 
+
+const postLogin = async (req,res,next)=>{
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty())
+    {
+        return res.status(400).json({errors :errors.array()})
+    }
+    
+    passport.authenticate('local',{
+        successRedirect:'/',
+        failureRedirect:'/login'
+    })(req,res,next);
+};
+
+
+const getFileUpload = (req,res)=>{
+    res.render('upload-form');
+};
+
+const postFileUpload = async (req,res)=>{
+    console.log(req.file);
+    await prisma.file.create({
+  data: {
+
+    originalName:
+      req.file.originalname,
+
+    storedName:
+      req.file.filename,
+
+    filePath:
+      req.file.path,
+
+    mimeType:
+      req.file.mimetype,
+
+    size:
+      req.file.size,
+
+    user: {
+      connect: {
+        id: req.user.id,
+      },
+    },
+  },
+});
+    res.send('file is uploaded');
+};
+
+const getFolders = (req,res)=>{
+    res.render('folders-section');
+};
+
+
 export default {
     getHome,
     getSignUp,
     postSignUp,
-    getLogin
+    getLogin,
+    postLogin,
+    getFileUpload,
+    postFileUpload,
+    getFolders
 }

@@ -4,6 +4,7 @@ import prisma from '../lib/prisma.js'
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import passport from "passport";
 import routes from "./routes/appRoutes.js"
+import './config/passport.js'
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,6 +41,11 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req,res,next) => {
+  res.locals.user = req.user
+  next();
+})
 
 app.use("/", routes);
 

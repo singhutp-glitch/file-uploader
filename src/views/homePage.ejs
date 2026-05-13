@@ -7,9 +7,21 @@
 </head>
 <body>
     <h1>Homepage</h1>
+    <div>
+       <% if (user) { %>
+  <h1>Welcome, <%= user.username%></h1>
+<% } else { %>
+  <h1>Not logged in</h1>
+<% } %>
+    </div>
     <ul>
         <li><a href="/sign-up">sign-up</a></li>
         <li><a href="/login">login</a></li>
+        <% if (user) { %>
+        <li><a href="/upload">upload file</a></li>
+        <li><a href="/folders">Folders</a></li>
+        
+<% } %>
     </ul>
 </body>
 </html>

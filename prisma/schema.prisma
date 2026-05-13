@@ -23,9 +23,10 @@ model User {
 
 model File {
   id         Int      @id @default(autoincrement())
-  filename   String
-  filepath   String
-  mimetype   String?
+  originalName String
+  storedName   String
+  filePath   String
+  mimeType   String?
   size       Int?
   uploadedAt DateTime @default(now())
 
