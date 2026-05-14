@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Folder - <%=folder.folderName %></h1>
+    <a href="/folder/<%=folder.id%>/update">Update</a>
      <form style="border: 1px black solid;padding: 4px;" action="/folder/<%=folder.id%>/upload" method="post" enctype="multipart/form-data">
         <label for="file">File:</label>
         <input type="file" id="file" name="file">

@@ -3,6 +3,7 @@ import appController from '../controllers/appController.js'
 import signUpValidator from '../validators/authValidator.js';
 import loginValidator from '../validators/loginValidator.js';
 import newFolderValidator from '../validators/newFolderValidator.js';
+import updateFolderValidator from '../validators/updateFolderValidator.js'
 import ensureAuth from '../middleware/ensureAuth.js';
 import upload from '../middleware/multer.js'
 
@@ -25,4 +26,10 @@ router.post('/create-folder',ensureAuth,newFolderValidator,appController.postCre
 router.get('/folder/:folderId',ensureAuth,appController.getOneFolder)
 
 router.post('/folder/:folderId/file/:fileId/delete',ensureAuth,appController.postDeleteFile)
+
+router.get('/folder/:folderId/update',ensureAuth,appController.getUpdateFolder)
+router.post('/folder/:folderId/update',ensureAuth,updateFolderValidator,appController.postUpdateFolder)
+
+
+
 export default router;

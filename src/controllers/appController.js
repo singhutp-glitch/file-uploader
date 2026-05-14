@@ -104,6 +104,9 @@ const getFolders = async (req, res) => {
         where: {
           userId: req.user.id,
         },
+        orderBy:{
+          folderName:'asc'
+        }
       });
 
     res.render("folders-section", {
@@ -193,6 +196,59 @@ const postDeleteFile = async (req,res) =>{
   
 }
 
+const getUpdateFolder =async (req,res)=>{
+    const folderId = +req.params.folderId;
+    const folder = await prisma.folder.findFirst({
+    where:{
+      id:folderId,
+      userId:req.user.id
+    }
+  })
+    res.render('update-folder',{folder:folder});
+};
+
+const postUpdateFolder = async(req,res) =>{
+  const errors = validationResult(req);
+
+    if(!errors.isEmpty())
+    {
+        return res.status(400).json({errors :errors.array()})
+    }
+    try{
+        const newName = req.body.newName;
+        const folderId = +req.params.folderId;
+        const folder = await prisma.folder.findFirst({
+            where:{
+                id:folderId,
+                userId:req.user.id
+            }
+        });
+        if(!folder){
+          return res.status(500).send("file not found");
+        }
+
+        await prisma.folder.update({
+          where:{
+            id:folderId
+          },
+          data:{
+            folderName:newName
+          }
+        })
+
+        res.redirect('/folder/'+folderId);
+    }catch(err){
+        console.error(err);
+
+        if(err.code === 'P2002'){
+          return res.status(400).send('folder already exists')
+        }
+        res.status(500).send('Error creating folder');
+    }
+
+}
+
+
 export default {
     getHome,
     getSignUp,
@@ -203,5 +259,8 @@ export default {
     getFolders,
     postCreateFolder,
     getOneFolder,
-    postDeleteFile
+    postDeleteFile,
+    getUpdateFolder,
+    postUpdateFolder
+  
 }
