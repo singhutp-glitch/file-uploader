@@ -2,6 +2,7 @@ import express from 'express'
 import appController from '../controllers/appController.js'
 import signUpValidator from '../validators/authValidator.js';
 import loginValidator from '../validators/loginValidator.js';
+import newFolderValidator from '../validators/newFolderValidator.js';
 import ensureAuth from '../middleware/ensureAuth.js';
 import upload from '../middleware/multer.js'
 
@@ -18,7 +19,9 @@ router.post('/login',loginValidator,appController.postLogin)
 router.get('/upload',appController.getFileUpload)
 router.post('/upload',ensureAuth,upload.single("file"),appController.postFileUpload)
 
-router.get('/folders',appController.getFolders)
+router.get('/folders',ensureAuth,appController.getFolders)
 
+router.post('/create-folder',ensureAuth,newFolderValidator,appController.postCreateFolder)
 
+router.get('/folder/:folderName',ensureAuth,appController.getOneFolder)
 export default router;

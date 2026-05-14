@@ -7,6 +7,20 @@
 </head>
 <body>
     <h1>Folders</h1>
-    
+    <form style="border: 1px black solid;padding: 4px;" action="/create-folder" method="post">
+        <div>
+            <label for="folder-name">Folder name:</label>
+            <input type="text" id="folder-name" name="folder_name" required>
+        </div>
+        <button type="submit">create new folder</button>
+    </form>
+    <h2>folder list:</h2>
+    <ul>
+        <% folders.forEach((folder,index) => {%>
+            <li>
+                <div><a href="/folder/<%= folder.folderName%>"><%= folder.folderName%></a></div>
+            </li>
+            <%})%>
+    </ul>
 </body>
 </html>

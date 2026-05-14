@@ -92,9 +92,57 @@ const postFileUpload = async (req,res)=>{
     res.send('file is uploaded');
 };
 
-const getFolders = (req,res)=>{
-    res.render('folders-section');
+const getFolders = async (req, res) => {
+
+  try {
+
+    const folders =
+      await prisma.folder.findMany({
+        where: {
+          userId: req.user.id,
+        },
+      });
+
+    res.render("folders-section", {
+      folders,
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500)
+      .send("Error fetching folders");
+  }
 };
+
+const postCreateFolder =async (req,res) => {
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty())
+    {
+        return res.status(400).json({errors :errors.array()})
+    }
+
+    try{
+        const {folder_name} = req.body;
+        await prisma.folder.create({
+            data:{
+                folderName:folder_name,
+                userId:req.user.id,
+            }
+        });
+
+        res.redirect('/folders');
+    }catch(err){
+        console.error(err);
+        res.status(500).send('Error creating folder');
+    }
+};
+
+const getOneFolder = async(req,res) =>{
+  res.render('inside-folder');
+}
 
 
 export default {
@@ -105,5 +153,7 @@ export default {
     postLogin,
     getFileUpload,
     postFileUpload,
-    getFolders
+    getFolders,
+    postCreateFolder,
+    getOneFolder
 }
