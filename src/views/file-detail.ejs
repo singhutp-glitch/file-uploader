@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File </title>
+</head>
+<body>
+    <h1>File</h1>
+    <ul>    
+        <li>Name: <%=file.originalName %></li>
+        <li>size: <%=file.size %>B</li>
+        <li>type: <%=file.mimeType %></li>
+        <li>upload time: <%=file.uploadedAt.toLocaleString() %></li>
+        <li><a href="/file/<%=file.id%>/download">Download</a></li>
+    </ul>
+
+</body>
+</html>

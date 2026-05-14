@@ -298,6 +298,50 @@ const postDeleteFolder = async (req,res) => {
   } 
 } 
 
+const getFileDetails = async (req,res) =>{
+  try{
+    const fileId = +req.params.fileId;
+
+    const file = await prisma.file.findFirst({
+      where:{
+        id:fileId,
+        userId:req.user.id
+      }
+    })
+
+    if(!file){
+      return res.status(404).send('file not found');
+    }
+
+    res.render('file-detail',{file:file});
+  }catch(err){
+    console.error(err);
+    res.status(500).send('error opening file');
+  }
+}
+
+const getDownloadFile = async(req,res) => {
+  try{
+    const fileId = +req.params.fileId;
+
+    const file = await prisma.file.findFirst({
+      where:{
+        id:fileId,
+        userId:req.user.id
+      }
+    })
+    if(!file){
+      return res.status(404).send('file not found');
+    }
+
+    res.download(file.filePath,file.originalName);
+
+  }catch(err){
+    console.error(err);
+    res.status(500).send('error downloading file');
+  }
+}
+
 export default {
     getHome,
     getSignUp,
@@ -311,6 +355,7 @@ export default {
     postDeleteFile,
     getUpdateFolder,
     postUpdateFolder,
-    postDeleteFolder
-  
+    postDeleteFolder,
+    getFileDetails,
+    getDownloadFile
 }

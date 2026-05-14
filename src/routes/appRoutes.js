@@ -31,6 +31,8 @@ router.get('/folder/:folderId/update',ensureAuth,appController.getUpdateFolder)
 router.post('/folder/:folderId/update',ensureAuth,updateFolderValidator,appController.postUpdateFolder)
 
 router.post('/folder/:folderId/delete',ensureAuth,appController.postDeleteFolder)
+router.get('/file/:fileId',ensureAuth,appController.getFileDetails)
 
+router.get('/file/:fileId/download',ensureAuth,appController.getDownloadFile);
 
 export default router;

@@ -17,7 +17,7 @@
     <h2>files:</h2>
     <ul>    
         <%files.forEach((file) => {%>
-            <li><%= file.originalName%> <form action="/folder/<%=folder.id%>/file/<%=file.id%>/delete" method="post">
+            <li><a href="/file/<%=file.id%>"><%= file.originalName%></a> <form action="/folder/<%=folder.id%>/file/<%=file.id%>/delete" method="post">
                 <button type="submit">Delete</button>
             </form></li>
         <%})%>
