@@ -245,9 +245,58 @@ const postUpdateFolder = async(req,res) =>{
         }
         res.status(500).send('Error creating folder');
     }
-
 }
 
+const postDeleteFolder = async (req,res) => {
+  try{
+  const folderId = +req.params.folderId;
+
+  const folder = await prisma.folder.findFirst({
+    where:{
+      id:folderId,
+      userId:req.user.id
+    }
+  });
+  if(!folder){
+    return res.status(404).send('folder not found');
+  }
+
+  const files = await prisma.file.findMany({
+    where:{
+      userId:req.user.id,
+      folderId: +folderId
+    }
+  });
+
+  for(const file of files){
+     try {
+
+        await fs.unlink(file.filePath);
+
+      } catch (err) {
+
+        if (err.code !== "ENOENT") {
+          throw err;
+        }
+      }
+
+    await prisma.file.delete({
+      where:{
+        id:file.id
+      }
+    });
+  }
+  await prisma.folder.delete({
+    where:{
+      id:folderId
+    }
+  })
+  res.redirect('/folders');
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error deleting file');
+  } 
+} 
 
 export default {
     getHome,
@@ -261,6 +310,7 @@ export default {
     getOneFolder,
     postDeleteFile,
     getUpdateFolder,
-    postUpdateFolder
+    postUpdateFolder,
+    postDeleteFolder
   
 }

@@ -30,6 +30,7 @@ router.post('/folder/:folderId/file/:fileId/delete',ensureAuth,appController.pos
 router.get('/folder/:folderId/update',ensureAuth,appController.getUpdateFolder)
 router.post('/folder/:folderId/update',ensureAuth,updateFolderValidator,appController.postUpdateFolder)
 
+router.post('/folder/:folderId/delete',ensureAuth,appController.postDeleteFolder)
 
 
 export default router;
