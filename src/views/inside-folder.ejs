@@ -6,8 +6,8 @@
     <title>Folder </title>
 </head>
 <body>
-    <h1>Folder</h1>
-     <form style="border: 1px black solid;padding: 4px;" action="/folder/<%=folderNum%>/upload" method="post" enctype="multipart/form-data">
+    <h1>Folder - <%=folder.folderName %></h1>
+     <form style="border: 1px black solid;padding: 4px;" action="/folder/<%=folder.id%>/upload" method="post" enctype="multipart/form-data">
         <label for="file">File:</label>
         <input type="file" id="file" name="file">
 
@@ -16,7 +16,7 @@
     <h2>files:</h2>
     <ul>    
         <%files.forEach((file) => {%>
-            <li><%= file.originalName%> <form action="/folder/<%=folderNum%>/file/<%=file.id%>/delete" method="post">
+            <li><%= file.originalName%> <form action="/folder/<%=folder.id%>/file/<%=file.id%>/delete" method="post">
                 <button type="submit">Delete</button>
             </form></li>
         <%})%>

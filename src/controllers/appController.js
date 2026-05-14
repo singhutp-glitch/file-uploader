@@ -144,14 +144,21 @@ const postCreateFolder =async (req,res) => {
 };
 
 const getOneFolder = async(req,res) =>{
-  const {folderId} = req.params;
+  const folderId = +req.params.folderId;
+  const folder = await prisma.folder.findFirst({
+    where:{
+      id:folderId,
+      userId:req.user.id
+    }
+  })
+
   const files = await prisma.file.findMany({
     where:{
       userId:req.user.userId,
       folderId: +folderId
     }
   })
-  res.render('inside-folder',{folderNum:folderId, files :files});
+  res.render('inside-folder',{files :files,folder:folder});
 }
 
 const postDeleteFile = async (req,res) =>{
