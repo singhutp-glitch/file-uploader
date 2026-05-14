@@ -2,6 +2,7 @@ import { validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
 import prisma from '../../lib/prisma.js'
 import passport from "passport";
+import fs from "node:fs/promises";
 
 const getHome = (req,res)=>{
     res.render('homePage');
@@ -58,13 +59,9 @@ const postLogin = async (req,res,next)=>{
 };
 
 
-const getFileUpload = (req,res)=>{
-    res.render('upload-form');
-};
-
 const postFileUpload = async (req,res)=>{
     console.log(req.file);
-    const {folderNum} = req.params;
+    const {folderId} = req.params;
     await prisma.file.create({
   data: {
 
@@ -90,12 +87,12 @@ const postFileUpload = async (req,res)=>{
     },
     folder: {
       connect: {
-        id: +folderNum,
+        id: +folderId,
       },
     },
   },
 });
-    res.redirect('/folder/'+folderNum);
+    res.redirect('/folder/'+folderId);
 };
 
 const getFolders = async (req, res) => {
@@ -147,16 +144,47 @@ const postCreateFolder =async (req,res) => {
 };
 
 const getOneFolder = async(req,res) =>{
-  const {folderNum} = req.params;
+  const {folderId} = req.params;
   const files = await prisma.file.findMany({
     where:{
       userId:req.user.userId,
-      folderId: +folderNum
+      folderId: +folderId
     }
   })
-  res.render('inside-folder',{folderNum:folderNum, files :files});
+  res.render('inside-folder',{folderNum:folderId, files :files});
 }
 
+const postDeleteFile = async (req,res) =>{
+
+  try{
+  const folderId = parseInt(req.params.folderId);
+  const fileId = parseInt(req.params.fileId);
+
+  const file = await prisma.file.findFirst({
+    where:{
+      id:fileId,
+      userId:req.user.id,
+      folderId:folderId
+    }
+  })
+  if(!file){
+    return res.status(404).send('file not found');
+  }
+
+  await fs.unlink(file.filePath);
+
+  await prisma.file.delete({
+    where:{
+      id:fileId
+    }
+  });
+  res.redirect('/folder/'+folderId);
+  }catch(err){
+    console.error(err);
+    res.status(500).send('Error deleting file');
+  } 
+  
+}
 
 export default {
     getHome,
@@ -164,9 +192,9 @@ export default {
     postSignUp,
     getLogin,
     postLogin,
-    getFileUpload,
     postFileUpload,
     getFolders,
     postCreateFolder,
-    getOneFolder
+    getOneFolder,
+    postDeleteFile
 }
