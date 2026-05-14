@@ -17,11 +17,11 @@ router.get('/login',appController.getLogin)
 router.post('/login',loginValidator,appController.postLogin)
 
 router.get('/upload',appController.getFileUpload)
-router.post('/upload',ensureAuth,upload.single("file"),appController.postFileUpload)
+router.post('/folder/:folderNum/upload',ensureAuth,upload.single("file"),appController.postFileUpload)
 
 router.get('/folders',ensureAuth,appController.getFolders)
 
 router.post('/create-folder',ensureAuth,newFolderValidator,appController.postCreateFolder)
 
-router.get('/folder/:folderName',ensureAuth,appController.getOneFolder)
+router.get('/folder/:folderNum',ensureAuth,appController.getOneFolder)
 export default router;

@@ -7,12 +7,18 @@
 </head>
 <body>
     <h1>Folder</h1>
-     <form style="border: 1px black solid;padding: 4px;" action="/upload" method="post" enctype="multipart/form-data">
+     <form style="border: 1px black solid;padding: 4px;" action="/folder/<%=folderNum%>/upload" method="post" enctype="multipart/form-data">
         <label for="file">File:</label>
         <input type="file" id="file" name="file">
 
         <button type="submit">Upload</button>
     </form>
+    <h2>files:</h2>
+    <ul>    
+        <%files.forEach((file) => {%>
+            <li><%= file.originalName%></li>
+        <%})%>
+    </ul>
 
 </body>
 </html>

@@ -64,6 +64,7 @@ const getFileUpload = (req,res)=>{
 
 const postFileUpload = async (req,res)=>{
     console.log(req.file);
+    const {folderNum} = req.params;
     await prisma.file.create({
   data: {
 
@@ -87,9 +88,14 @@ const postFileUpload = async (req,res)=>{
         id: req.user.id,
       },
     },
+    folder: {
+      connect: {
+        id: +folderNum,
+      },
+    },
   },
 });
-    res.send('file is uploaded');
+    res.redirect('/folder/'+folderNum);
 };
 
 const getFolders = async (req, res) => {
@@ -141,7 +147,14 @@ const postCreateFolder =async (req,res) => {
 };
 
 const getOneFolder = async(req,res) =>{
-  res.render('inside-folder');
+  const {folderNum} = req.params;
+  const files = await prisma.file.findMany({
+    where:{
+      userId:req.user.userId,
+      folderId: +folderNum
+    }
+  })
+  res.render('inside-folder',{folderNum:folderNum, files :files});
 }
 
 
