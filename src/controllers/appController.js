@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
 import prisma from '../../lib/prisma.js'
+import supabase from '../config/supabase.js'
 import passport from "passport";
 import fs from "node:fs/promises";
 
@@ -61,7 +62,54 @@ const postLogin = async (req,res,next)=>{
 
 const postFileUpload = async (req,res)=>{
     console.log(req.file);
-    const {folderId} = req.params;
+  try{
+    if(!req.file){
+      return res.status(400).send('file not uploaded');
+    }
+
+    const folderId = parseInt(req.params.folderId);
+    const localFilePath = req.file.path;
+    const fileName = req.file.originalname;
+
+    const folder = await prisma.folder.findFirst({
+      where:{
+        id:folderId,
+        userId:req.user.id
+      }
+    });
+    if(!folder){
+      return res.status(404).send('folder not found');
+    }
+
+    
+    const existingFile = await prisma.file.findFirst(
+      {
+        where:{
+          folderId,
+          originalName:fileName
+        }
+      }
+    );
+    if(existingFile){
+      return res.status(400).send('file with same name already exist!');
+    }
+    const storagePath = `user-${req.user.id}/folder-${folderId}/${fileName}`;
+    const fileBuffer = await fs.readFile(localFilePath);
+    const {data,error} = await supabase.storage.from('user-files')
+      .upload(
+        storagePath,
+        fileBuffer,{
+          contentType:req.file.mimetype
+        }
+      )
+
+      if(error){
+        throw error;
+      }
+      const {data:publicUrlData} = supabase.storage.from('user-files').getPublicUrl(storagePath);
+      const publicUrl = publicUrlData.publicUrl;
+
+
     await prisma.file.create({
   data: {
 
@@ -72,7 +120,9 @@ const postFileUpload = async (req,res)=>{
       req.file.filename,
 
     filePath:
-      req.file.path,
+      storagePath,
+
+    fileUrl:publicUrl,
 
     mimeType:
       req.file.mimetype,
@@ -92,7 +142,12 @@ const postFileUpload = async (req,res)=>{
     },
   },
 });
+    await fs.unlink(localFilePath);
     res.redirect('/folder/'+folderId);
+}catch(error){
+  console.error(error);
+  res.status(500).send('Error uploading file');
+}
 };
 
 const getFolders = async (req, res) => {
@@ -181,7 +236,10 @@ const postDeleteFile = async (req,res) =>{
     return res.status(404).send('file not found');
   }
 
-  await fs.unlink(file.filePath);
+  const {error} = await supabase.storage.from('user-files').remove([file.filePath]);
+  if(error){
+    throw error;
+  }
 
   await prisma.file.delete({
     where:{
@@ -334,7 +392,28 @@ const getDownloadFile = async(req,res) => {
       return res.status(404).send('file not found');
     }
 
-    res.download(file.filePath,file.originalName);
+    const { data, error } =
+      await supabase.storage
+
+        .from("user-files")
+
+        .createSignedUrl(
+          file.filePath,
+          60,
+          {
+            download:
+              file.originalName
+          }
+        );
+
+    if (error) {
+
+      throw error;
+    }
+
+    // redirect to download URL
+
+    res.redirect(data.signedUrl);
 
   }catch(err){
     console.error(err);
