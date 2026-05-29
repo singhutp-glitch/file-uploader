@@ -146,8 +146,6 @@ const postFileUpload = async (req,res)=>{
 }catch(error){
   console.error(error);
   res.status(500).send('Error uploading file');
-}finally {
-  await fs.unlink(localFilePath);
 }
 };
 
