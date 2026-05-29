@@ -142,11 +142,12 @@ const postFileUpload = async (req,res)=>{
     },
   },
 });
-    await fs.unlink(localFilePath);
     res.redirect('/folder/'+folderId);
 }catch(error){
   console.error(error);
   res.status(500).send('Error uploading file');
+}finally {
+  await fs.unlink(localFilePath);
 }
 };
 
