@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express-session";
+import multer from "multer";
 import prisma from '../lib/prisma.js'
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import passport from "passport";
@@ -48,6 +49,28 @@ app.use((req,res,next) => {
 })
 
 app.use("/", routes);
+
+app.use((err, req, res, next) => {
+
+  if (
+    err instanceof multer.MulterError
+  ) {
+
+    return res.status(400)
+      .send(err.message);
+  }
+
+  if (
+    err.message ===
+    "Invalid file type"
+  ) {
+
+    return res.status(400)
+      .send(err.message);
+  }
+
+  next(err);
+});
 
 app.listen(3000, () => {
   console.log("Server started on port 3000");
